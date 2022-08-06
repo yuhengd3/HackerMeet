@@ -1,5 +1,7 @@
 package com.yuheng.hackermeet.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,11 +17,29 @@ public class Skill {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    private String name;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
+//    @JsonIgnore
     private HMUser user;
 
-    private String name;
+    public Skill() {
+
+    }
+
+    public Skill(HMUser user, String name) {
+        this.user = user;
+        this.name = name;
+    }
+
+    public Skill(String name) {
+        this.name = name;
+    }
+
+    public Long getId() {
+        return id;
+    }
 
     public HMUser getUser() {
         return user;
@@ -29,7 +49,20 @@ public class Skill {
         this.user = user;
     }
 
-    public Long getId() {
-        return id;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "Skill{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", user=" + user.getSub() +
+                '}';
     }
 }
