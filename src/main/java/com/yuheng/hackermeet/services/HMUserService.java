@@ -9,21 +9,22 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class HMUserService {
-    private HMUserRepository hmUserRepository;
-    private SkillRepository skillRepository;
+    private final HMUserRepository hmUserRepository;
 
     @Autowired
-    public HMUserService(HMUserRepository hmRepo, SkillRepository skillRepo) {
-        hmUserRepository = hmRepo;
-        skillRepository = skillRepo;
+    public HMUserService(HMUserRepository hmUserRepository) {
+        this.hmUserRepository = hmUserRepository;
     }
 
     public HMUser saveHMUser(HMUser user) {
-        HMUser updatedUesr = hmUserRepository.save(user);
-        skillRepository.saveAll(user.getSkills());
-        return updatedUesr;
+        return hmUserRepository.save(user);
+    }
+
+    public Optional<HMUser> findHMUserById(Long id) {
+        return hmUserRepository.findById(id);
     }
 }

@@ -19,34 +19,17 @@ public class Skill {
 
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-//    @JsonIgnore
-    private HMUser user;
-
     public Skill() {
 
-    }
-
-    public Skill(HMUser user, String name) {
-        this.user = user;
-        this.name = name;
     }
 
     public Skill(String name) {
         this.name = name;
     }
 
+
     public Long getId() {
         return id;
-    }
-
-    public HMUser getUser() {
-        return user;
-    }
-
-    public void setUser(HMUser user) {
-        this.user = user;
     }
 
     public String getName() {
@@ -62,7 +45,6 @@ public class Skill {
         return "Skill{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", user=" + user.getSub() +
                 '}';
     }
 }
