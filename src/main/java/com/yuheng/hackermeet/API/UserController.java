@@ -1,14 +1,15 @@
 package com.yuheng.hackermeet.API;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yuheng.hackermeet.models.HMUser;
 import com.yuheng.hackermeet.services.HMUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Base64;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("api/users")
@@ -27,8 +28,31 @@ public class UserController {
     }
 
     @PostMapping
-    public HMUser saveUser(@RequestBody HMUser user) {
+    public HMUser saveUser(@RequestBody HMUser user,
+                           @RequestHeader (name="Authorization") String token) {
         return hmUserService.saveHMUser(user);
+    }
+
+    @PutMapping("/{id}")
+    public HMUser updateUser(@RequestBody HMUser user, @PathVariable Long id,
+                             @RequestHeader(name="Authorization") String token) throws JsonProcessingException {
+        String sub = parsePayloadFromJWT(token).get("sub").asText();
+        if (!Objects.equals(user.getSub(), sub)) {
+            throw new RuntimeException("Auth0 id from awt doesn't match user object");
+        }
+        return hmUserService.findHMUserById(id).filter(storedUser ->
+                Objects.equals(storedUser.getId(), user.getId())
+                        && Objects.equals(storedUser.getSub(), user.getSub()))
+                .map(unused -> hmUserService.saveHMUser(user))
+                .orElseThrow();
+    }
+    public static JsonNode parsePayloadFromJWT(String token) throws JsonProcessingException {
+        String[] chunks = token.split("\\.");
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+        String payload = new String(decoder.decode(chunks[1]));
+
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readTree(payload);
     }
 
 

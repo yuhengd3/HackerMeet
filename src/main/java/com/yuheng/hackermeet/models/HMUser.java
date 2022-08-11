@@ -12,19 +12,8 @@ public class HMUser {
     private Long id;
 
     // Auth0User ID
+    @Column(unique = true)
     private String sub;
-
-    protected HMUser() {
-
-    }
-
-    public String getSub() {
-        return sub;
-    }
-
-    public void setSub(String sub) {
-        this.sub = sub;
-    }
 
     private String email;
 
@@ -37,6 +26,18 @@ public class HMUser {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id")
     private List<Skill> skills = new ArrayList<Skill>();
+
+    protected HMUser() {
+
+    }
+
+    public String getSub() {
+        return sub;
+    }
+
+    public void setSub(String sub) {
+        this.sub = sub;
+    }
 
     public void addSkill(Skill skill) {
         skills.add(skill);
@@ -54,14 +55,28 @@ public class HMUser {
         this.id = id;
     }
 
-    public HMUser(Long id, String sub, String email, String username, String github, String website, List<Skill> skills) {
-        this.id = id;
-        this.sub = sub;
-        this.email = email;
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
         this.username = username;
-        this.github = github;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
         this.website = website;
-        this.skills = skills;
+    }
+
+    public String getGithub() {
+        return github;
+    }
+
+    public void setGithub(String github) {
+        this.github = github;
     }
 
     @Override
