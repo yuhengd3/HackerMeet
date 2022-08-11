@@ -43,7 +43,10 @@ public class UserController {
         return hmUserService.findHMUserById(id).filter(storedUser ->
                 Objects.equals(storedUser.getId(), user.getId())
                         && Objects.equals(storedUser.getSub(), user.getSub()))
-                .map(unused -> hmUserService.saveHMUser(user))
+                .map(storedUser -> {
+                    storedUser.setGithub(user.getGithub());
+                    return hmUserService.saveHMUser(storedUser);
+                })
                 .orElseThrow();
     }
     public static JsonNode parsePayloadFromJWT(String token) throws JsonProcessingException {
