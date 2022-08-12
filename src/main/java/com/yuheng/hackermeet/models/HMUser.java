@@ -4,7 +4,9 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class HMUser {
@@ -25,9 +27,10 @@ public class HMUser {
 
     private String website;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_id")
-    private List<Skill> skills = new ArrayList<Skill>();
+//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JoinColumn(name = "user_id")
+    @ManyToMany
+    private Set<Skill> skills = new HashSet<Skill>();
 
     protected HMUser() {
 
@@ -45,8 +48,12 @@ public class HMUser {
         skills.add(skill);
     }
 
-    public List<Skill> getSkills() {
+    public Set<Skill> getSkills() {
         return skills;
+    }
+
+    public void setSkills(Set<Skill> skills) {
+        this.skills = skills;
     }
 
     public Long getId() {
@@ -81,6 +88,14 @@ public class HMUser {
         this.github = github;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @Override
     public String toString() {
 
@@ -94,4 +109,6 @@ public class HMUser {
                 ", skills=" + skills +
                 '}';
     }
+
+
 }

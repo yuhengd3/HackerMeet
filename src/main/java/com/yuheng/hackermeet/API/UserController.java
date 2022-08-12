@@ -30,6 +30,7 @@ public class UserController {
     @PostMapping
     public HMUser saveUser(@RequestBody HMUser user,
                            @RequestHeader (name="Authorization") String token) {
+        System.out.println(user);
         return hmUserService.saveHMUser(user);
     }
 
@@ -45,7 +46,7 @@ public class UserController {
                         && Objects.equals(storedUser.getSub(), user.getSub()))
                 .map(storedUser -> {
                     storedUser.setGithub(user.getGithub());
-                    return hmUserService.saveHMUser(storedUser);
+                    return hmUserService.saveHMUser(user);
                 })
                 .orElseThrow();
     }
