@@ -38,4 +38,8 @@ public class HMUserService {
     public Optional<HMUser> findHMUserById(Long id) {
         return hmUserRepository.findById(id);
     }
+
+    public void deleteHMUserById(Long id) {
+        hmUserRepository.deleteById(id);
+    }
 }

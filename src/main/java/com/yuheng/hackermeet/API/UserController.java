@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Base64;
 import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/users")
@@ -29,8 +30,11 @@ public class UserController {
 
     @PostMapping
     public HMUser saveUser(@RequestBody HMUser user,
-                           @RequestHeader (name="Authorization") String token) {
-        System.out.println(user);
+                           @RequestHeader (name="Authorization") String token) throws JsonProcessingException {
+        String sub = parsePayloadFromJWT(token).get("sub").asText();
+        if (!Objects.equals(user.getSub(), sub)) {
+            throw new RuntimeException("Auth0 sub from awt doesn't match user object");
+        }
         return hmUserService.saveHMUser(user);
     }
 
@@ -39,7 +43,7 @@ public class UserController {
                              @RequestHeader(name="Authorization") String token) throws JsonProcessingException {
         String sub = parsePayloadFromJWT(token).get("sub").asText();
         if (!Objects.equals(user.getSub(), sub)) {
-            throw new RuntimeException("Auth0 id from awt doesn't match user object");
+            throw new RuntimeException("Auth0 sub from awt doesn't match user object");
         }
         return hmUserService.findHMUserById(id).filter(storedUser ->
                 Objects.equals(storedUser.getId(), user.getId())
@@ -49,6 +53,22 @@ public class UserController {
                     return hmUserService.saveHMUser(user);
                 })
                 .orElseThrow();
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteUser(@PathVariable Long id, @RequestHeader(name="Authorization") String token) {
+        hmUserService.findHMUserById(id).ifPresent(user -> {
+            String sub = null;
+            try {
+                sub = parsePayloadFromJWT(token).get("sub").asText();
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+            if (!Objects.equals(user.getSub(), sub)) {
+                throw new RuntimeException("Auth0 sub from awt doesn't match user object");
+            }
+            hmUserService.deleteHMUserById(id);
+        });
     }
     public static JsonNode parsePayloadFromJWT(String token) throws JsonProcessingException {
         String[] chunks = token.split("\\.");
