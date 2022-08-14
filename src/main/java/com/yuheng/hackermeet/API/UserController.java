@@ -28,8 +28,15 @@ public class UserController {
         return hmUserService.findHMUserById(id).orElseThrow();
     }
 
+    @GetMapping("/self")
+    public HMUser getSelf(@RequestHeader (name="Authorization") String token) throws JsonProcessingException {
+        String sub = parsePayloadFromJWT(token).get("sub").asText();
+        return hmUserService.findHMUserBySub(sub).get();
+    }
+
+
     @PostMapping
-    public HMUser saveUser(@RequestBody HMUser user,
+    public HMUser createUser(@RequestBody HMUser user,
                            @RequestHeader (name="Authorization") String token) throws JsonProcessingException {
         String sub = parsePayloadFromJWT(token).get("sub").asText();
         if (!Objects.equals(user.getSub(), sub)) {
@@ -49,7 +56,7 @@ public class UserController {
                 Objects.equals(storedUser.getId(), user.getId())
                         && Objects.equals(storedUser.getSub(), user.getSub()))
                 .map(storedUser -> {
-                    storedUser.setGithub(user.getGithub());
+//                    storedUser.setGithub(user.getGithub());
                     return hmUserService.saveHMUser(user);
                 })
                 .orElseThrow();

@@ -39,6 +39,10 @@ public class HMUserService {
         return hmUserRepository.findById(id);
     }
 
+    public Optional<HMUser> findHMUserBySub(String sub) {
+        return hmUserRepository.findHMUserBySub(sub);
+    }
+
     public void deleteHMUserById(Long id) {
         hmUserRepository.deleteById(id);
     }
