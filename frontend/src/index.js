@@ -1,8 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { Auth0Provider } from '@auth0/auth0-react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
 import './index.css';
 import App from './App';
-import { Auth0Provider } from "@auth0/auth0-react";
+import Profile from './components/Profile';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -11,8 +15,16 @@ root.render(
       domain={process.env.REACT_APP_AUTH0_DOMAIN}
       clientId={process.env.REACT_APP_AUTH0_CLIENT_ID}
       redirectUri={window.location.origin}
+      audience={process.env.REACT_APP_AUTH0_API_AUDIENCE}
     >
-      <App />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="/profile" element={<Profile />} />
+        </Routes>
+      </BrowserRouter>
+      
+      
     </Auth0Provider>
   </React.StrictMode>
 );
